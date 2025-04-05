@@ -14,7 +14,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
         include:
           - os: ubuntu-latest
-            artifact_name: checkmol--x86_64-linux
+            artifact_name: checkmol-x86_64-linux
             binary_name: checkmol
           - os: windows-latest
             artifact_name: checkmol-x86_64-windows.exe
