@@ -11,16 +11,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-13]
         include:
           - os: ubuntu-latest
-            artifact_name: checkmol-linux
+            artifact_name: checkmol--x86_64-linux
             binary_name: checkmol
           - os: windows-latest
-            artifact_name: checkmol-windows.exe
+            artifact_name: checkmol-x86_64-windows.exe
             binary_name: checkmol.exe
           - os: macos-latest
-            artifact_name: checkmol-macos
+            artifact_name: checkmol-aarch64-apple-darwin
+            binary_name: checkmol
+          - os: macos-13
+            artifact_name: checkmol-x86_64-apple-darwin
             binary_name: checkmol
 
     steps:
