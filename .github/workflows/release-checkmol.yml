@@ -1,0 +1,60 @@
+name: Build and Release Checkmol
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # Triggers on tags like v1.0.0
+
+jobs:
+  build:
+    name: Build and Upload Binaries
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: checkmol-linux
+            binary_name: checkmol
+          - os: windows-latest
+            artifact_name: checkmol-windows.exe
+            binary_name: checkmol.exe
+          - os: macos-latest
+            artifact_name: checkmol-macos
+            binary_name: checkmol
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install FPC
+        run: |
+          case "${{ runner.os }}" in
+            Linux)
+              sudo apt update
+              sudo apt install -y fpc
+              ;;
+            macOS)
+              brew install fpc
+              ;;
+            Windows)
+              choco install fpc --version=3.2.2 -y
+              ;;
+          esac
+        shell: bash
+
+      - name: Compile checkmol.pas
+        run: fpc checkmol.pas -S2 -O3 -Op3
+
+      - name: Rename binary
+        run: mv checkmol${{ matrix.os == 'windows-latest' && '.exe' || '' }} ${{ matrix.artifact_name }}
+        shell: bash
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          files: ${{ matrix.artifact_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
